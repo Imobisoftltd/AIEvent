@@ -443,7 +443,9 @@ const CONFIG = {
     let prize;
     try {
       if (!CONFIGURED) throw new Error("not configured");
-      const r = await callSheet(lead);
+      const slow = setTimeout(() => { $("statusText").textContent = "Still spinning, nearly there…"; }, 6000);
+      let r;
+      try { r = await callSheet(lead, 30000); } finally { clearTimeout(slow); }
       if (r && r.duplicate){
         if (freeSpin){ cancelAnimationFrame(freeSpin.raf); freeSpin = null; }
         spinning = false; resetForm(true);
