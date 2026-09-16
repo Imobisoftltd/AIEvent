@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Spin for a gift</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --brand:#1B2A4A; --brand-ink:#FFFFFF; --brand-2:#00A3E0; --brand-2-ink:#101828;
+  --bg:#F4F6FA; --surface:#FFFFFF; --ink:#101828; --muted:#5A6478; --line:#DDE3EC;
+  --accent:var(--brand); --accent-ink:var(--brand-ink); --danger:#C2362B; --focus:var(--brand-2);
+  --wheel-rim:var(--brand); --field:#FFFFFF; --hub:#FFFFFF;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0B1220; --surface:#141D2F; --ink:#EEF2F8; --muted:#9AA6BA; --line:#26324A;
+    --accent:var(--brand-2); --accent-ink:var(--brand-2-ink); --danger:#FF8A7E;
+    --wheel-rim:#EEF2F8; --field:#0F1829; --hub:#0B1220; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0B1220; --surface:#141D2F; --ink:#EEF2F8; --muted:#9AA6BA; --line:#26324A;
+  --accent:var(--brand-2); --accent-ink:var(--brand-2-ink); --danger:#FF8A7E;
+  --wheel-rim:#EEF2F8; --field:#0F1829; --hub:#0B1220; color-scheme: dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:"Manrope", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size:1.0625rem; line-height:1.45; min-height:100vh; overflow-x:hidden;
+  -webkit-tap-highlight-color:transparent;
+}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+
+.shell{max-width:1240px;margin:0 auto;padding:clamp(1rem,3vw,2.5rem);min-height:100vh;display:flex;flex-direction:column}
+.top{display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-bottom:clamp(1rem,3vw,2rem)}
+.brand{display:flex;align-items:center;gap:1rem;min-width:0}
+.brand-logo{height:40px;width:auto;max-width:220px;object-fit:contain;display:block}
+.wordmark{font-weight:800;font-size:1.6rem;letter-spacing:-.03em;color:var(--ink)}
+.event{font-weight:600;color:var(--muted);font-size:.95rem;border-left:2px solid var(--line);padding-left:1rem;white-space:nowrap}
+.event strong{color:var(--ink)}
+.brand-bar{height:6px;border-radius:6px;background:linear-gradient(90deg,var(--brand) 0 60%,var(--brand-2) 60% 100%);margin-bottom:1.25rem}
+.staff-btn{background:none;border:1px solid var(--line);border-radius:999px;padding:.4rem .9rem;color:var(--muted);font-size:.85rem;cursor:pointer}
+.staff-btn:hover{color:var(--ink);border-color:var(--muted)}
+
+.stage{flex:1;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:clamp(1.5rem,4vw,4rem);align-items:center}
+@media (max-width:860px){.stage{grid-template-columns:1fr}.wheel-col{order:-1}}
+
+h1{font-size:clamp(2.4rem,5.2vw,4.4rem);line-height:.95;letter-spacing:-.035em;font-weight:800;margin:0 0 .6rem}
+.lede{color:var(--muted);margin:0 0 1.4rem;max-width:34ch;font-size:1.125rem}
+
+form{display:grid;gap:.8rem;max-width:440px}
+.field label{display:block;font-weight:600;font-size:.95rem;margin-bottom:.35rem}
+.field .opt{color:var(--muted);font-weight:400}
+.field input{
+  width:100%;padding:.75rem 1rem;border:2px solid var(--line);border-radius:14px;background:var(--field);
+  font-size:1.1rem;transition:border-color .15s;
+}
+.field input:focus{border-color:var(--accent);outline:none}
+.field input[aria-invalid="true"]{border-color:var(--danger)}
+.err{color:var(--danger);font-size:.88rem;margin-top:.3rem;min-height:0}
+.consent{display:flex;gap:.7rem;align-items:flex-start;font-size:.92rem;color:var(--muted);line-height:1.35}
+.consent input{width:22px;height:22px;margin:.05rem 0 0;accent-color:var(--accent);flex:none}
+.cta{
+  margin-top:.25rem;padding:1.05rem 1.4rem;border:0;border-radius:999px;background:var(--accent);color:var(--accent-ink);
+  font-weight:800;font-size:1.2rem;letter-spacing:-.01em;cursor:pointer;transition:transform .12s;
+}
+.cta:hover{transform:translateY(-1px)}
+.cta:active{transform:translateY(1px)}
+.cta:disabled{opacity:.55;cursor:default;transform:none}
+.formnote{color:var(--danger);font-weight:600;min-height:1.4em;margin:0}
+
+.status h2{font-size:clamp(2rem,4.2vw,3.4rem);line-height:1;letter-spacing:-.03em;margin:0 0 .6rem;font-weight:800}
+.status p{color:var(--muted);margin:0 0 1.5rem;font-size:1.15rem;max-width:34ch}
+.ghost{background:none;border:2px solid var(--ink);border-radius:999px;padding:.85rem 1.3rem;font-weight:700;cursor:pointer;font-size:1.05rem}
+.countdown{display:block;color:var(--muted);font-size:.9rem;margin-top:.8rem}
+
+.wheel-col{position:relative;display:grid;place-items:center}
+.wheel-wrap{position:relative;width:min(100%,600px,calc(100vh - 13.5rem));aspect-ratio:1;margin-top:1rem}
+.wheel-wrap #wheel{width:100%;height:100%;display:block;overflow:visible}
+.wheel-wrap .pointer{position:absolute;left:50%;top:-4%;transform:translateX(-50%);width:11%;height:auto;z-index:2;filter:drop-shadow(0 3px 0 rgba(0,0,0,.15))}
+.seg-label{font-family:inherit;font-weight:700;font-size:15px;letter-spacing:-.01em}
+.seg-icon{fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.seg.out path.slice{fill:#C9D0DB}
+.seg.out .seg-label,.seg.out .seg-icon{opacity:.45}
+.hub-text{font-weight:800;font-size:22px;fill:var(--ink);letter-spacing:-.02em}
+
+.reveal{
+  position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;
+}
+.reveal-card{
+  background:var(--surface);border:3px solid var(--ink);border-radius:28px;padding:1.6rem 2rem 1.8rem;text-align:center;
+  box-shadow:10px 10px 0 var(--brand-2);transform:scale(.6) rotate(-6deg);opacity:0;
+  transition:transform .45s cubic-bezier(.2,1.6,.4,1),opacity .2s;max-width:86%;
+}
+.reveal.show .reveal-card{transform:scale(1) rotate(-2deg);opacity:1}
+.reveal-card .big-icon{width:84px;height:84px;margin:0 auto .5rem;border-radius:50%;display:grid;place-items:center}
+.reveal-card .big-icon svg{width:52px;height:52px}
+.reveal-card .you{color:var(--muted);font-weight:600;margin:0}
+.reveal-card .prize{font-size:clamp(2rem,4vw,2.8rem);font-weight:800;letter-spacing:-.03em;margin:.1rem 0 0;line-height:1}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:50;width:100%;height:100%}
+
+.foot{margin-top:1.5rem;color:var(--muted);font-size:.8rem;display:flex;gap:1rem;justify-content:space-between;flex-wrap:wrap}
+.sync-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#43D19E;margin-right:.35rem;vertical-align:middle}
+.sync-dot.warn{background:#FFC93C}
+.sync-dot.off{background:#FF7A5C}
+
+.hidden{display:none !important}
+.setup-banner{background:#FFF4D6;color:#5A4200;border:1px solid #F2D27A;border-radius:12px;padding:.7rem 1rem;margin-bottom:1rem;font-size:.92rem}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+.consent a{color:inherit}
+@media (prefers-reduced-motion: reduce){.reveal-card{transition:opacity .2s}}
+</style>
+</head>
+<body>
+<canvas id="confetti"></canvas>
+<div class="shell">
+  <div class="brand-bar" aria-hidden="true"></div>
+  <div class="setup-banner hidden" id="setupBanner">Setup needed: paste your Google Apps Script link into SHEET_URL at the top of the script in index.html. Until then, leads are only saved in this browser.</div>
+  <header class="top">
+    <div class="brand">
+      <img class="brand-logo hidden" id="brandLogo" alt="">
+      <span class="wordmark" id="wordmark"></span>
+      <span class="event"><strong>AI Transform</strong> Warwick</span>
+    </div>
+  </header>
+
+  <main class="stage">
+    <section class="form-col">
+      <div id="formView">
+        <h1>Spin for a thank-you gift</h1>
+        <p class="lede" id="lede"></p>
+        <form id="leadForm" novalidate autocomplete="off">
+          <div class="field">
+            <label for="fName">Name</label>
+            <input id="fName" required maxlength="80" autocapitalize="words" autocomplete="name">
+            <div class="err" id="eName"></div>
+          </div>
+          <div class="field">
+            <label for="fTitle">Job title</label>
+            <input id="fTitle" required maxlength="80" autocapitalize="words" autocomplete="organization-title">
+            <div class="err" id="eTitle"></div>
+          </div>
+          <div class="field">
+            <label for="fCompany">Company</label>
+            <input id="fCompany" required maxlength="80" autocapitalize="words" autocomplete="organization">
+            <div class="err" id="eCompany"></div>
+          </div>
+          <div class="field">
+            <label for="fMobile">Mobile <span class="opt">(optional)</span></label>
+            <input id="fMobile" type="tel" inputmode="tel" maxlength="20" autocomplete="tel">
+            <div class="err" id="eMobile"></div>
+          </div>
+          <input class="hp" id="fWebsite" tabindex="-1" autocomplete="off" aria-hidden="true">
+          <label class="consent">
+            <input type="checkbox" id="fConsent">
+            <span id="consentText"></span>
+          </label>
+          <button class="cta" id="spinBtn" type="submit">Spin the wheel</button>
+          <p class="formnote" id="formNote" role="alert"></p>
+        </form>
+      </div>
+
+      <div id="statusView" class="status hidden" aria-live="polite">
+        <h2 id="statusTitle"></h2>
+        <p id="statusText"></p>
+        <button class="ghost hidden" id="nextBtn" type="button">Next visitor</button>
+        <span class="countdown hidden" id="countdown"></span>
+      </div>
+    </section>
+
+    <section class="wheel-col" aria-label="Prize wheel">
+      <div class="wheel-wrap">
+        <svg class="pointer" viewBox="0 -10 60 80" aria-hidden="true">
+          <path d="M30 68 L6 18 A26 26 0 1 1 54 18 Z" fill="var(--ink)"/>
+          <circle cx="30" cy="24" r="9" fill="var(--bg)"/>
+        </svg>
+        <svg id="wheel" viewBox="-210 -210 420 420" role="img" aria-label="Wheel with six gifts"></svg>
+        <div class="reveal" id="reveal">
+          <div class="reveal-card" role="status">
+            <div class="big-icon" id="revealIcon"></div>
+            <p class="you" id="revealYou"></p>
+            <p class="prize" id="revealPrize"></p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <span id="syncStatus"></span>
+    <span id="footNote"></span>
+  </footer>
+</div>
+
+<script>
+/* ============================================================
+   SETTINGS: edit these, then upload index.html to GitHub
+   ============================================================ */
+const CONFIG = {
+  // Paste the Web app URL from Google Apps Script (ends in /exec)
+  SHEET_URL: "https://script.google.com/macros/s/AKfycbzcgraqgHPtYPQK7TAJb5tI8dHVSMzPJumfUGCW6yq9syMYbEY1mjpzIg96xLtC3OtL/exec",
+  COMPANY: "Imobisoft",
+  BRAND: "#1B2A4A",          // main brand colour
+  ACCENT: "#00A3E0",         // accent colour
+  LOGO: "logo.png",          // upload logo.png next to index.html, or set to "" to show the company name
+  PRIVACY_URL: "https://imobisoft.co.uk/privacy-policy/",
+  RESET_SECONDS: 20          // stall tablet mode only (add ?kiosk to the link)
+};
+/* ============================================================ */
+
+(() => {
+  "use strict";
+
+  const PRIZES = [
+    { name:"Lip balm",     icon:'<rect x="8" y="10" width="8" height="11" rx="1.5"/><path d="M9 10V6.5a3 3 0 0 1 6 0V10"/><path d="M8 14h8"/>' },
+    { name:"Travel mug",   icon:'<path d="M6 8h12l-1.2 12.2a1 1 0 0 1-1 .8H8.2a1 1 0 0 1-1-.8z"/><path d="M5 8h14V6a1 1 0 0 0-1-1H6a1 1 0 0 0-1 1z"/><path d="M13 3h3"/>' },
+    { name:"Water bottle", icon:'<path d="M10 2h4v3h-4z"/><path d="M9.5 5h5l1.5 3v12a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2V8z"/><path d="M8 12h8"/>' },
+    { name:"Mint box",     icon:'<rect x="4" y="7" width="16" height="11" rx="3"/><path d="M4 11h16"/><circle cx="9" cy="14.5" r="1"/><circle cx="14" cy="14.5" r="1"/>' },
+    { name:"Notebook",     icon:'<rect x="6" y="3" width="13" height="18" rx="1.5"/><path d="M4 7h3M4 12h3M4 17h3"/><path d="M10 8h6M10 11h6"/>' },
+    { name:"Pen",          icon:'<path d="M16.5 3.5l4 4L9 19l-5 1 1-5z"/><path d="M14 6l4 4"/>' }
+  ];
+  const SEG = 360 / PRIZES.length;
+  const KIOSK = new URLSearchParams(location.search).has("kiosk");
+  const CONFIGURED = /^https:\/\/script\.google\.com\/.+\/exec/.test(CONFIG.SHEET_URL);
+  const QUEUE_KEY = "spin-queue-v1", HISTORY_KEY = "spin-history-v1", MINE_KEY = "spin-my-win-v1", REMAIN_KEY = "spin-remaining-v1";
+  const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+  const store = {
+    get(k, d){ try { const v = JSON.parse(localStorage.getItem(k)); return v ?? d; } catch { return d; } },
+    set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+  };
+
+  let rotation = 0, spinning = false, resetTimer = null, spinner, audio = null;
+  let remaining = store.get(REMAIN_KEY, {});   // prize name -> number left, or null for unlimited
+
+  // ---------- brand ----------
+  const hex = h => /^#[0-9a-f]{6}$/i.test(h) ? h : "#1B2A4A";
+  const toRgb = h => [1,3,5].map(i => parseInt(h.slice(i,i+2),16));
+  const toHex = a => "#" + a.map(v => Math.round(Math.max(0,Math.min(255,v))).toString(16).padStart(2,"0")).join("");
+  const mix = (a,b,t) => { const A = toRgb(a), B = toRgb(b); return toHex(A.map((v,i) => v + (B[i]-v)*t)); };
+  const lum = h => { const c = toRgb(h).map(v => { v/=255; return v <= .03928 ? v/12.92 : Math.pow((v+.055)/1.055,2.4); }); return .2126*c[0]+.7152*c[1]+.0722*c[2]; };
+  const inkFor = h => lum(h) > 0.36 ? "#101828" : "#FFFFFF";
+  const B = hex(CONFIG.BRAND), A = hex(CONFIG.ACCENT);
+  const PALETTE = [B, mix(A,"#FFFFFF",.62), A, mix(B,"#FFFFFF",.84), mix(B,A,.45), mix(A,"#FFFFFF",.35)];
+
+  function applyBrand(){
+    const r = document.documentElement.style;
+    r.setProperty("--brand", B); r.setProperty("--brand-ink", inkFor(B));
+    r.setProperty("--brand-2", A); r.setProperty("--brand-2-ink", inkFor(A));
+    $("wordmark").textContent = CONFIG.COMPANY;
+    if (CONFIG.LOGO){
+      const img = $("brandLogo");
+      img.alt = CONFIG.COMPANY;
+      img.onload = () => { img.classList.remove("hidden"); $("wordmark").classList.add("hidden"); };
+      img.src = CONFIG.LOGO;
+    }
+    $("lede").textContent = `Thanks for visiting the ${CONFIG.COMPANY} stand. Leave your details and the wheel picks your gift.`;
+    $("consentText").innerHTML = `I'm happy for ${esc(CONFIG.COMPANY)} to contact me about their AI and software services after the event. <a href="${esc(CONFIG.PRIVACY_URL)}" target="_blank" rel="noopener">Privacy policy</a>`;
+    $("footNote").textContent = `${CONFIG.COMPANY}. Your details are only used by our team and never sold.`;
+    document.title = `${CONFIG.COMPANY}: spin for a gift`;
+    $("setupBanner").classList.toggle("hidden", CONFIGURED);
+  }
+
+  // ---------- wheel ----------
+  function arc(r,a0,a1){
+    const rad = d => (d-90)*Math.PI/180;
+    return `M0 0 L${(r*Math.cos(rad(a0))).toFixed(2)} ${(r*Math.sin(rad(a0))).toFixed(2)} A${r} ${r} 0 0 1 ${(r*Math.cos(rad(a1))).toFixed(2)} ${(r*Math.sin(rad(a1))).toFixed(2)} Z`;
+  }
+  function buildWheel(){
+    const wheel = $("wheel");
+    let html = `<circle r="206" fill="var(--wheel-rim)"/><g id="spinner">`;
+    PRIZES.forEach((p,i) => {
+      const a0 = i*SEG, c = a0 + SEG/2, fill = PALETTE[i], ink = inkFor(fill), w = p.name.split(" ");
+      const label = w.length > 1
+        ? `<text class="seg-label" fill="${ink}" text-anchor="middle" y="-92">${esc(w[0])}</text><text class="seg-label" fill="${ink}" text-anchor="middle" y="-74">${esc(w.slice(1).join(" "))}</text>`
+        : `<text class="seg-label" fill="${ink}" text-anchor="middle" y="-82">${esc(p.name)}</text>`;
+      html += `<g class="seg" data-name="${esc(p.name)}"><path class="slice" d="${arc(194,a0,a0+SEG)}" fill="${fill}" stroke="var(--wheel-rim)" stroke-width="3"/>
+        <g transform="rotate(${c})"><g transform="translate(-19,-172) scale(1.6)"><g class="seg-icon" stroke="${ink}">${p.icon}</g></g>${label}</g></g>`;
+    });
+    for (let i = 0; i < PRIZES.length; i++){ const a = (i*SEG-90)*Math.PI/180; html += `<circle cx="${(200*Math.cos(a)).toFixed(2)}" cy="${(200*Math.sin(a)).toFixed(2)}" r="4" fill="var(--bg)"/>`; }
+    html += `</g><circle r="44" fill="var(--hub)" stroke="var(--wheel-rim)" stroke-width="5"/><text class="hub-text" text-anchor="middle" dy="8">spin</text>`;
+    wheel.innerHTML = html;
+    spinner = wheel.querySelector("#spinner");
+    refreshWheel();
+  }
+  function refreshWheel(){
+    document.querySelectorAll(".seg").forEach(g => g.classList.toggle("out", remaining[g.dataset.name] === 0));
+  }
+  const setRotation = d => spinner.setAttribute("transform", `rotate(${d})`);
+
+  function tick(){
+    if (!audio) return;
+    try {
+      const o = audio.createOscillator(), g = audio.createGain();
+      o.type = "square"; o.frequency.value = 1400;
+      g.gain.setValueAtTime(.05, audio.currentTime); g.gain.exponentialRampToValueAtTime(.0001, audio.currentTime+.04);
+      o.connect(g).connect(audio.destination); o.start(); o.stop(audio.currentTime+.05);
+    } catch {}
+  }
+
+  // free spin while waiting for the sheet, then ease onto the prize
+  let freeSpin = null;
+  function startFreeSpin(){
+    let last = performance.now(), lastSeg = Math.floor(rotation/SEG);
+    const speed = reduceMotion ? 0.12 : 0.55; // deg per ms
+    const loop = now => {
+      if (!freeSpin) return;
+      rotation += (now - last) * speed; last = now; setRotation(rotation);
+      const seg = Math.floor(rotation/SEG); if (seg !== lastSeg){ lastSeg = seg; tick(); }
+      freeSpin.raf = requestAnimationFrame(loop);
+    };
+    freeSpin = { raf: requestAnimationFrame(loop) };
+  }
+  function spinTo(index){
+    if (freeSpin){ cancelAnimationFrame(freeSpin.raf); freeSpin = null; }
+    return new Promise(resolve => {
+      const center = index*SEG + SEG/2, jitter = (Math.random()-.5)*SEG*.6;
+      const start = rotation, delta = (((-center + jitter) - start) % 360 + 360) % 360;
+      const target = start + (reduceMotion ? 1 : 4)*360 + delta, duration = reduceMotion ? 1200 : 4200;
+      const t0 = performance.now(); let lastSeg = Math.floor(start/SEG);
+      // ease-out starting at roughly the free-spin speed
+      const ease = t => 1 - Math.pow(1-t, 3);
+      const frame = now => {
+        const t = Math.min(1, (now-t0)/duration);
+        rotation = start + (target-start)*ease(t); setRotation(rotation);
+        const seg = Math.floor(rotation/SEG); if (seg !== lastSeg){ lastSeg = seg; tick(); }
+        if (t < 1) requestAnimationFrame(frame); else { rotation = target % 360; setRotation(rotation); resolve(); }
+      };
+      requestAnimationFrame(frame);
+    });
+  }
+
+  function localPick(){
+    const rem = PRIZES.map(p => remaining[p.name] ?? null);
+    const nums = rem.filter(r => r !== null && r > 0);
+    const avg = nums.length ? nums.reduce((a,b)=>a+b,0)/nums.length : 1;
+    const w = rem.map(r => r === null ? avg : r), total = w.reduce((a,b)=>a+b,0);
+    if (total <= 0) return null;
+    let x = Math.random()*total;
+    for (let i = 0; i < w.length; i++){ x -= w[i]; if (x < 0) return PRIZES[i].name; }
+    return null;
+  }
+
+  function confetti(){
+    if (reduceMotion) return;
+    const cv = $("confetti"), ctx = cv.getContext("2d"), dpr = devicePixelRatio || 1;
+    cv.width = innerWidth*dpr; cv.height = innerHeight*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
+    const r = $("wheel").getBoundingClientRect(), ox = r.left + r.width/2, oy = r.top + r.height/2;
+    const parts = Array.from({length:160}, () => { const a = Math.random()*Math.PI*2, v = 6+Math.random()*10;
+      return { x:ox, y:oy, vx:Math.cos(a)*v, vy:Math.sin(a)*v-4, w:6+Math.random()*6, h:8+Math.random()*10, r:Math.random()*6, vr:(Math.random()-.5)*.3, c:PALETTE[(Math.random()*6)|0] }; });
+    const t0 = performance.now();
+    const frame = now => {
+      const el = now - t0; ctx.clearRect(0,0,innerWidth,innerHeight);
+      for (const p of parts){ p.vy += .28; p.vx *= .985; p.x += p.vx; p.y += p.vy; p.r += p.vr;
+        ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.r); ctx.globalAlpha = Math.max(0,1-el/2600); ctx.fillStyle = p.c; ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h); ctx.restore(); }
+      if (el < 2600) requestAnimationFrame(frame); else ctx.clearRect(0,0,innerWidth,innerHeight);
+    };
+    requestAnimationFrame(frame);
+  }
+
+  // ---------- Google Sheet ----------
+  async function callSheet(payload, timeoutMs = 12000){
+    const ctrl = new AbortController(); const t = setTimeout(() => ctrl.abort(), timeoutMs);
+    try {
+      const res = payload
+        ? await fetch(CONFIG.SHEET_URL, { method:"POST", headers:{ "Content-Type":"text/plain;charset=utf-8" }, body:JSON.stringify(payload), signal:ctrl.signal })
+        : await fetch(CONFIG.SHEET_URL, { signal:ctrl.signal });
+      const data = await res.json();
+      if (data && data.remaining){ remaining = data.remaining; store.set(REMAIN_KEY, remaining); refreshWheel(); }
+      return data;
+    } finally { clearTimeout(t); }
+  }
+
+  async function flushQueue(){
+    if (!CONFIGURED) return updateSync();
+    const q = store.get(QUEUE_KEY, []);
+    for (const lead of q){
+      try {
+        const r = await callSheet({ ...lead, queued:true });
+        if (r && r.ok !== undefined){ store.set(QUEUE_KEY, store.get(QUEUE_KEY, []).filter(x => x.id !== lead.id)); }
+      } catch { break; }
+    }
+    updateSync();
+  }
+
+  function updateSync(){
+    const n = store.get(QUEUE_KEY, []).length, el = $("syncStatus");
+    if (!CONFIGURED) el.innerHTML = `<span class="sync-dot off"></span>Not connected to Google Sheets`;
+    else if (n) el.innerHTML = `<span class="sync-dot warn"></span>${n} lead${n>1?"s":""} waiting to upload`;
+    else el.innerHTML = KIOSK ? `<span class="sync-dot"></span>All leads uploaded` : "";
+  }
+
+  // ---------- form ----------
+  const fields = [
+    { el:$("fName"), err:$("eName"), msg:"Enter your name" },
+    { el:$("fTitle"), err:$("eTitle"), msg:"Enter your job title" },
+    { el:$("fCompany"), err:$("eCompany"), msg:"Enter your company" }
+  ];
+  fields.forEach(f => f.el.addEventListener("input", () => { f.el.removeAttribute("aria-invalid"); f.err.textContent = ""; }));
+  function validate(){
+    let ok = true, first = null;
+    for (const f of fields){ if (!f.el.value.trim()){ ok = false; f.el.setAttribute("aria-invalid","true"); f.err.textContent = f.msg; first ||= f.el; } }
+    const m = $("fMobile").value.trim();
+    if (m && !/^[+()\d\s-]{7,20}$/.test(m)){ ok = false; $("fMobile").setAttribute("aria-invalid","true"); $("eMobile").textContent = "Check the mobile number"; first ||= $("fMobile"); }
+    else { $("fMobile").removeAttribute("aria-invalid"); $("eMobile").textContent = ""; }
+    first?.focus(); return ok;
+  }
+  const norm = s => String(s).trim().toLowerCase().replace(/\s+/g," ");
+  const first = n => n.split(" ")[0];
+
+  $("leadForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    if (spinning) return;
+    $("formNote").textContent = "";
+    if (!validate()) return;
+    const lead = {
+      id: "L" + Date.now().toString(36) + Math.random().toString(36).slice(2,7),
+      name: $("fName").value.trim(), jobTitle: $("fTitle").value.trim(), company: $("fCompany").value.trim(),
+      mobile: $("fMobile").value.trim(), consent: $("fConsent").checked, website: $("fWebsite").value,
+      source: KIOSK ? "Stall tablet" : "Visitor phone", createdAt: new Date().toISOString()
+    };
+    const history = store.get(HISTORY_KEY, []);
+    if (history.some(h => norm(h.name) === norm(lead.name) && norm(h.company) === norm(lead.company))){
+      $("formNote").textContent = `${lead.name} from ${lead.company} has already spun. Ask a member of the team if that's not right.`;
+      return;
+    }
+
+    try { audio ||= new (window.AudioContext || window.webkitAudioContext)(); audio.resume?.(); } catch {}
+    spinning = true; $("spinBtn").disabled = true;
+    showStatus(`Good luck, ${first(lead.name)}`, "The wheel is spinning…", false);
+    if (matchMedia("(max-width:860px)").matches) $("wheel").scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block:"center" });
+    startFreeSpin();
+
+    let prize;
+    try {
+      if (!CONFIGURED) throw new Error("not configured");
+      const r = await callSheet(lead);
+      if (r && r.duplicate){
+        if (freeSpin){ cancelAnimationFrame(freeSpin.raf); freeSpin = null; }
+        spinning = false; resetForm(true);
+        $("fName").value = lead.name; $("fTitle").value = lead.jobTitle; $("fCompany").value = lead.company; $("fMobile").value = lead.mobile;
+        $("formNote").textContent = `${lead.name} from ${lead.company} has already spun. Ask a member of the team if that's not right.`;
+        return;
+      }
+      if (!r || !r.ok) throw new Error(r?.error || "sheet error");
+      prize = r.prize || null;
+    } catch {
+      // offline or sheet unreachable: pick here and upload later
+      prize = localPick();
+      if (prize && remaining[prize] != null){ remaining[prize] = Math.max(0, remaining[prize]-1); store.set(REMAIN_KEY, remaining); }
+      const q = store.get(QUEUE_KEY, []); q.push({ ...lead, prize }); store.set(QUEUE_KEY, q);
+      updateSync();
+    }
+    history.push({ name:lead.name, company:lead.company }); store.set(HISTORY_KEY, history.slice(-500));
+    refreshWheel();
+
+    const idx = PRIZES.findIndex(p => p.name === prize);
+    if (idx < 0){
+      if (freeSpin){ cancelAnimationFrame(freeSpin.raf); freeSpin = null; }
+      showStatus(`Thanks, ${first(lead.name)}`, "We've handed out every gift, but your details are saved and the team will say hello.", KIOSK);
+      spinning = false; if (KIOSK) startReset();
+      return;
+    }
+    await spinTo(idx);
+    const p = PRIZES[idx], fill = PALETTE[idx];
+    $("revealIcon").style.background = fill;
+    $("revealIcon").innerHTML = `<svg viewBox="0 0 24 24" class="seg-icon" stroke="${inkFor(fill)}">${p.icon}</svg>`;
+    $("revealYou").textContent = `${first(lead.name)}, you won a`;
+    $("revealPrize").textContent = p.name;
+    $("reveal").classList.add("show");
+    confetti();
+    showStatus(`You won a ${p.name.toLowerCase()}`, `Show this screen to the ${CONFIG.COMPANY} team to collect your gift. Thanks for stopping by.`, KIOSK);
+    if (!KIOSK) store.set(MINE_KEY, { name:lead.name, prize:p.name });
+    spinning = false;
+    if (KIOSK) startReset();
+  });
+
+  function showStatus(title, text, showNext){
+    $("formView").classList.add("hidden"); $("statusView").classList.remove("hidden");
+    $("statusTitle").textContent = title; $("statusText").textContent = text;
+    $("nextBtn").classList.toggle("hidden", !showNext); $("countdown").classList.add("hidden");
+  }
+  function startReset(){
+    clearInterval(resetTimer);
+    let s = CONFIG.RESET_SECONDS; const cd = $("countdown");
+    cd.classList.remove("hidden"); cd.textContent = `Resets in ${s}s`;
+    resetTimer = setInterval(() => { s--; cd.textContent = `Resets in ${s}s`; if (s <= 0) resetForm(); }, 1000);
+    $("nextBtn").focus();
+  }
+  function resetForm(keepFocus){
+    clearInterval(resetTimer);
+    $("leadForm").reset(); $("reveal").classList.remove("show");
+    $("statusView").classList.add("hidden"); $("formView").classList.remove("hidden");
+    $("spinBtn").disabled = false; $("formNote").textContent = "";
+    refreshWheel(); if (!keepFocus) $("fName").focus();
+  }
+  $("nextBtn").addEventListener("click", () => resetForm());
+
+  // ---------- start ----------
+  applyBrand();
+  buildWheel();
+  setRotation(0);
+  updateSync();
+
+  const mine = !KIOSK && store.get(MINE_KEY, null);
+  if (mine){
+    const idx = PRIZES.findIndex(p => p.name === mine.prize);
+    if (idx >= 0){
+      rotation = -(idx*SEG + SEG/2); setRotation(rotation);
+      showStatus(`You won a ${mine.prize.toLowerCase()}`, `Show this screen to the ${CONFIG.COMPANY} team to collect your gift.`, false);
+    }
+  }
+
+  if (CONFIGURED){
+    callSheet(null).catch(() => {}).finally(flushQueue);
+    addEventListener("online", flushQueue);
+    setInterval(flushQueue, 60000);
+  }
+})();
+
+</script>
+</body>
+</html>
