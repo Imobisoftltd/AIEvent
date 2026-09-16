@@ -212,7 +212,8 @@ const CONFIG = {
   ACCENT: "#00A3E0",         // accent colour
   LOGO: "logo.png",          // upload logo.png next to index.html, or set to "" to show the company name
   PRIVACY_URL: "https://imobisoft.co.uk/privacy-policy/",
-  RESET_SECONDS: 20          // stall tablet mode only (add ?kiosk to the link)
+  RESET_SECONDS: 20,         // stall tablet mode only (add ?kiosk to the link)
+  SPIN_SECONDS: 15           // longest time from tapping Spin to seeing the gift
 };
 /* ============================================================ */
 
@@ -228,6 +229,9 @@ const CONFIG = {
     { name:"Pen",          icon:'<path d="M16.5 3.5l4 4L9 19l-5 1 1-5z"/><path d="M14 6l4 4"/>' }
   ];
   const SEG = 360 / PRIZES.length;
+  const TOTAL_MS = Math.max(5, Number(CONFIG.SPIN_SECONDS) || 15) * 1000;
+  const LANDING_MS = Math.min(4200, TOTAL_MS * 0.5);          // the slow-down onto the gift
+  const SHEET_WAIT_MS = TOTAL_MS - LANDING_MS;                // how long to wait for the sheet to pick
   const KIOSK = new URLSearchParams(location.search).has("kiosk");
   const CONFIGURED = /^https:\/\/script\.google\.com\/.+\/exec/.test(CONFIG.SHEET_URL);
   const QUEUE_KEY = "spin-queue-v1", HISTORY_KEY = "spin-history-v1", MINE_KEY = "spin-my-win-v1", REMAIN_KEY = "spin-remaining-v1";
@@ -325,7 +329,7 @@ const CONFIG = {
     return new Promise(resolve => {
       const center = index*SEG + SEG/2, jitter = (Math.random()-.5)*SEG*.6;
       const start = rotation, delta = (((-center + jitter) - start) % 360 + 360) % 360;
-      const target = start + (reduceMotion ? 1 : 4)*360 + delta, duration = reduceMotion ? 1200 : 4200;
+      const target = start + (reduceMotion ? 1 : 4)*360 + delta, duration = reduceMotion ? 1200 : LANDING_MS;
       const t0 = performance.now(); let lastSeg = Math.floor(start/SEG);
       // ease-out starting at roughly the free-spin speed
       const ease = t => 1 - Math.pow(1-t, 3);
@@ -443,9 +447,9 @@ const CONFIG = {
     let prize;
     try {
       if (!CONFIGURED) throw new Error("not configured");
-      const slow = setTimeout(() => { $("statusText").textContent = "Still spinning, nearly there…"; }, 6000);
+      const slow = setTimeout(() => { $("statusText").textContent = "Still spinning, nearly there…"; }, Math.min(6000, SHEET_WAIT_MS * 0.6));
       let r;
-      try { r = await callSheet(lead, 30000); } finally { clearTimeout(slow); }
+      try { r = await callSheet(lead, SHEET_WAIT_MS); } finally { clearTimeout(slow); }
       if (r && r.duplicate){
         if (freeSpin){ cancelAnimationFrame(freeSpin.raf); freeSpin = null; }
         spinning = false; resetForm(true);
@@ -460,6 +464,7 @@ const CONFIG = {
       prize = localPick();
       if (prize && remaining[prize] != null){ remaining[prize] = Math.max(0, remaining[prize]-1); store.set(REMAIN_KEY, remaining); }
       const q = store.get(QUEUE_KEY, []); q.push({ ...lead, prize }); store.set(QUEUE_KEY, q);
+      setTimeout(flushQueue, 4000); // tell the sheet which gift was shown as soon as possible
       updateSync();
     }
     history.push({ name:lead.name, company:lead.company }); store.set(HISTORY_KEY, history.slice(-500));
